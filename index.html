@@ -1,14 +1,416 @@
+<!-- Define document type as HTML5 standard -->
 <!DOCTYPE html>
+<!-- Opening tag of the HTML document indicating English language -->
 <html lang="en">
-
+<!-- Head section containing meta tags, fonts, styles, and external script references -->
 <head>
+    <!-- Define character encoding as UTF-8 for universal symbol support -->
     <meta charset="UTF-8">
+    <!-- Configure responsive viewport width and scale for mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <!-- Title of the site, keeping the original name 'Lon's Movie Hub' unchanged -->
+    <title>Lon's Movie Hub</title>
+    <!-- Import Google Font 'Plus Jakarta Sans' for a modern, sleek interface typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Import FontAwesome icon library for modern icons used in headers, ratings, and buttons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Import Tailwind CSS v3 via Play CDN to allow real-time utility classes execution -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Define custom configuration script to extend Tailwind CSS default classes -->
+    <script>
+        // Configure Tailwind theme extensions dynamically
+        tailwind.config = {
+            // Access the theme extension object
+            theme: {
+                // Extend subproperties such as colors or fonts
+                extend: {
+                    // Inject a custom font family mapping the Google font we imported
+                    fontFamily: {
+                        // Declare 'sans' font stack to use Plus Jakarta Sans as primary
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Embed custom styles for scrollbars and animations not easily built with utility classes -->
+    <style>
+        /* Define scrollbar appearance for Webkit-based browsers like Chrome or Safari */
+        ::-webkit-scrollbar {
+            /* Width of the vertical scrollbar */
+            width: 8px;
+        }
+        /* Define scrollbar track background color */
+        ::-webkit-scrollbar-track {
+            /* Match background color of our application theme */
+            background: #020617;
+        }
+        /* Define styling for scrollbar slider thumb */
+        ::-webkit-scrollbar-thumb {
+            /* Set slate purple color for the scrollbar thumb slider */
+            background: #1e1b4b;
+            /* Round the corners of the scrollbar thumb */
+            border-radius: 9999px;
+        }
+        /* Define hover behavior for the scrollbar slider thumb */
+        ::-webkit-scrollbar-thumb:hover {
+            /* Brighten the thumb color on hover to indicate interactivity */
+            background: #312e81;
+        }
+    </style>
+<!-- Closing head tag -->
 </head>
+<!-- Body element styled with deep dark color scheme, modern text tracking, and flex layout -->
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col selection:bg-violet-600 selection:text-white overflow-x-hidden">
 
-<body>
+    <!-- Header navigation bar, sticky at top with glassmorphic blur and subtle borders -->
+    <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-white/5 px-4 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- Logo and Brand name container with link structure -->
+        <a href="#" class="flex items-center gap-2 group">
+            <!-- Icon element representing movie camera / entertainment -->
+            <i class="fa-solid fa-clapperboard text-violet-500 text-2xl group-hover:rotate-12 transition-transform duration-300"></i>
+            <!-- Site Title header text styled with beautiful, modern gradient colors -->
+            <span class="text-xl lg:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-rose-400 bg-clip-text text-transparent">Lon's Movie Hub</span>
+        </a>
 
+        <!-- Middle search bar container, taking flexible space on larger screens -->
+        <div class="relative w-full max-w-md">
+            <!-- Glassmorphic search form input styled with custom focus transitions -->
+            <input type="text" id="searchInput" placeholder="Search movies, TV shows..." class="w-full bg-white/5 border border-white/10 rounded-full px-5 py-2 pl-11 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:bg-slate-900 transition-all duration-300 text-slate-100" />
+            <!-- Search magnifying glass icon positioned absolutely on the left of input -->
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <!-- Search icon -->
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <!-- Clear search text button, hidden by default unless input contains values -->
+            <button id="clearSearch" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 hidden">
+                <!-- Close cross icon -->
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Navigation buttons, counters, and localized widgets grouping on header right side -->
+        <div class="flex items-center gap-4">
+            <!-- Regional/Country indicator badge representing Ghanaian context of application -->
+            <div class="flex items-center gap-1.5 bg-violet-950/50 border border-violet-800/30 text-violet-300 px-3 py-1 rounded-full text-xs font-semibold">
+                <!-- Globe icon to denote regional specificity -->
+                <i class="fa-solid fa-globe"></i>
+                <!-- Display geographical scope referencing the COUNTRY variable -->
+                <span id="countryIndicator">Ghana Hits</span>
+            </div>
+            
+            <!-- Dynamic button to trigger watchlist overlay filter tab directly -->
+            <button id="watchlistNavBtn" class="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 shadow-lg shadow-violet-950/50">
+                <!-- Heart icon symbolizing collection/watchlist of movies -->
+                <i class="fa-solid fa-heart"></i>
+                <!-- Label for the button -->
+                <span>Watchlist</span>
+                <!-- Numeric count bubble for dynamic items saved by the user -->
+                <span id="watchlistCount" class="bg-white/20 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main site body content container spanning flex grid -->
+    <main class="flex-grow pb-16">
+        
+        <!-- Hero section spotlighting a trending movie backdrop banner dynamically -->
+        <section id="heroSection" class="relative w-full h-[65vh] md:h-[75vh] flex items-end overflow-hidden transition-all duration-700 bg-slate-900 border-b border-white/5">
+            <!-- Absolute background image wrapper with backdrop visual representation -->
+            <div id="heroBackdrop" class="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105 filter blur-[2px] md:blur-0" style="background-image: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=2000');"></div>
+            <!-- Radial and linear gradient mask to blend image into the deep dark base theme -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+            <!-- Secondary side overlay gradient for readability on wide desktop displays -->
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-transparent to-transparent hidden md:block"></div>
+            
+            <!-- Hero content metadata container, aligned left bottom and fully responsive -->
+            <div class="relative z-10 w-full max-w-4xl px-4 lg:px-8 pb-10 md:pb-16 flex flex-col gap-3 md:gap-4">
+                <!-- Spotlight status badge highlighting trending status -->
+                <span class="inline-flex items-center gap-1 bg-violet-600/90 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full w-max">
+                    <!-- Sparkle dynamic badge icon -->
+                    <i class="fa-solid fa-bolt"></i>
+                    <!-- Spotlight status text -->
+                    <span>Spotlight Movie</span>
+                </span>
+                
+                <!-- Main title of the spotlight movie -->
+                <h1 id="heroTitle" class="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg leading-tight">Loading Featured Movie...</h1>
+                
+                <!-- Details row: rating, release date, runtime info -->
+                <div class="flex flex-wrap items-center gap-3 text-sm font-medium text-slate-300">
+                    <!-- Rating indicator box -->
+                    <span class="flex items-center gap-1 text-yellow-400">
+                        <!-- Rating star icon -->
+                        <i class="fa-solid fa-star"></i>
+                        <!-- Rating value -->
+                        <span id="heroRating">0.0</span>
+                    </span>
+                    <!-- Divider bullet dot -->
+                    <span class="text-slate-500">•</span>
+                    <!-- Release year indicator -->
+                    <span id="heroYear">2026</span>
+                    <!-- Divider bullet dot -->
+                    <span class="text-slate-500">•</span>
+                    <!-- Genre tags list placeholder in hero -->
+                    <span id="heroGenres" class="text-slate-300">Action, Sci-Fi</span>
+                </div>
+                
+                <!-- Long-form summary synopsis description of the spotlight movie -->
+                <p id="heroOverview" class="text-sm md:text-base text-slate-300 max-w-2xl line-clamp-3 md:line-clamp-4 drop-shadow-md leading-relaxed">Please wait while the movie hub loads fresh entertainment feeds directly from the movie database. Ensure your API key is correctly configured.</p>
+                
+                <!-- Call-to-action button groupings in the hero section -->
+                <div class="flex flex-wrap gap-3 mt-2">
+                    <!-- Detail inspector trigger button -->
+                    <button id="heroDetailsBtn" class="flex items-center gap-2 bg-white text-slate-950 hover:bg-slate-200 px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 transform active:scale-95 shadow-lg shadow-black/25">
+                        <!-- Play circle button icon -->
+                        <i class="fa-solid fa-circle-info"></i>
+                        <!-- Action text -->
+                        <span>More Details</span>
+                    </button>
+                    <!-- Add to Watchlist quick toggle button -->
+                    <button id="heroWatchlistBtn" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 backdrop-blur-md">
+                        <!-- Plus sign icon -->
+                        <i class="fa-solid fa-plus" id="heroWatchlistIcon"></i>
+                        <!-- Watchlist text -->
+                        <span id="heroWatchlistText">My Watchlist</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category selector tabs navigation segment -->
+        <section class="max-w-[1400px] mx-auto px-4 lg:px-8 mt-12">
+            <!-- Tabs container centering on mobile, flex row on wider layout -->
+            <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-8 overflow-x-auto gap-4 scrollbar-none">
+                <!-- Nav list hosting different sorting categories -->
+                <div class="flex gap-2 min-w-max">
+                    <!-- Popular Category Tab Button -->
+                    <button id="tab-popular" class="category-tab px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-violet-600 text-white shadow-md shadow-violet-950/50">
+                        <!-- Trending/Fire icon -->
+                        <i class="fa-solid fa-fire mr-1.5"></i>Trending
+                    </button>
+                    <!-- Top Rated Category Tab Button -->
+                    <button id="tab-top_rated" class="category-tab px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5">
+                        <!-- Star trophy icon -->
+                        <i class="fa-solid fa-award mr-1.5"></i>Top Rated
+                    </button>
+                    <!-- Upcoming Category Tab Button -->
+                    <button id="tab-upcoming" class="category-tab px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5">
+                        <!-- Calendar clock icon -->
+                        <i class="fa-solid fa-calendar-days mr-1.5"></i>Upcoming
+                    </button>
+                    <!-- Saved Watchlist Category Tab Button -->
+                    <button id="tab-watchlist" class="category-tab px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5">
+                        <!-- Heart collection icon -->
+                        <i class="fa-solid fa-heart mr-1.5"></i>Watchlist
+                    </button>
+                </div>
+                <!-- Dynamic title reflecting context or user status -->
+                <span id="sectionTitle" class="text-xs uppercase tracking-widest font-bold text-violet-400 hidden sm:block">Trending Worldwide</span>
+            </div>
+
+            <!-- Dynamic Horizontal Scrolling Genre Pill Buttons Container -->
+            <div id="genresContainer" class="flex gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none -mx-4 px-4">
+                <!-- Interactive pills will be injected dynamically via JS -->
+            </div>
+
+            <!-- Section displaying grid of movie items and search results -->
+            <div class="relative min-h-[400px]">
+                
+                <!-- Standard Grid container for standard movie cards -->
+                <div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 transition-all duration-500">
+                    <!-- Standard placeholder Loading skeleton cards generated instantly below -->
+                    <!-- Skeleton Card 1 -->
+                    <div class="animate-pulse bg-white/5 border border-white/5 rounded-2xl overflow-hidden aspect-[2/3] flex flex-col justify-end p-4 gap-2">
+                        <!-- Poster skeleton placeholder -->
+                        <div class="h-4 bg-white/10 rounded w-3/4"></div>
+                        <!-- Meta text skeleton placeholder -->
+                        <div class="h-3 bg-white/10 rounded w-1/2"></div>
+                    </div>
+                    <!-- Skeleton Card 2 -->
+                    <div class="animate-pulse bg-white/5 border border-white/5 rounded-2xl overflow-hidden aspect-[2/3] flex flex-col justify-end p-4 gap-2">
+                        <!-- Poster skeleton placeholder -->
+                        <div class="h-4 bg-white/10 rounded w-3/4"></div>
+                        <!-- Meta text skeleton placeholder -->
+                        <div class="h-3 bg-white/10 rounded w-1/2"></div>
+                    </div>
+                    <!-- Skeleton Card 3 -->
+                    <div class="animate-pulse bg-white/5 border border-white/5 rounded-2xl overflow-hidden aspect-[2/3] flex flex-col justify-end p-4 gap-2">
+                        <!-- Poster skeleton placeholder -->
+                        <div class="h-4 bg-white/10 rounded w-3/4"></div>
+                        <!-- Meta text skeleton placeholder -->
+                        <div class="h-3 bg-white/10 rounded w-1/2"></div>
+                    </div>
+                    <!-- Skeleton Card 4 -->
+                    <div class="animate-pulse bg-white/5 border border-white/5 rounded-2xl overflow-hidden aspect-[2/3] flex flex-col justify-end p-4 gap-2">
+                        <!-- Poster skeleton placeholder -->
+                        <div class="h-4 bg-white/10 rounded w-3/4"></div>
+                        <!-- Meta text skeleton placeholder -->
+                        <div class="h-3 bg-white/10 rounded w-1/2"></div>
+                    </div>
+                    <!-- Skeleton Card 5 -->
+                    <div class="animate-pulse bg-white/5 border border-white/5 rounded-2xl overflow-hidden aspect-[2/3] flex flex-col justify-end p-4 gap-2">
+                        <!-- Poster skeleton placeholder -->
+                        <div class="h-4 bg-white/10 rounded w-3/4"></div>
+                        <!-- Meta text skeleton placeholder -->
+                        <div class="h-3 bg-white/10 rounded w-1/2"></div>
+                    </div>
+                <!-- Closing tag for moviesGrid -->
+                </div>
+
+                <!-- Empty state UI container, displayed when no movies found or watchlist is empty -->
+                <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-center hidden p-8 bg-slate-950/80 rounded-2xl border border-white/5">
+                    <!-- Icon container with relative pulsing glow design -->
+                    <div class="relative mb-4">
+                        <!-- Pulsing halo element -->
+                        <div class="absolute inset-0 bg-violet-600 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                        <!-- Centered display icon -->
+                        <i class="fa-solid fa-film text-5xl text-violet-500 relative"></i>
+                    </div>
+                    <!-- Primary empty header alert title -->
+                    <h3 class="text-xl font-bold text-slate-100 mb-2">No Movies Found</h3>
+                    <!-- Detailed explanation subtitle helping user navigate -->
+                    <p id="emptyStateText" class="text-slate-400 max-w-sm text-sm">We couldn't find any results matches. Try adjusting your search query, choosing a different filter, or adding films to your watchlist.</p>
+                </div>
+            <!-- Closing tag for grid parent block -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer segment containing licensing and database credit mentions -->
+    <footer class="bg-slate-950 border-t border-white/5 py-8 text-center text-slate-500 text-xs flex flex-col gap-2 mt-auto">
+        <!-- Site title branding in footer to match main site header -->
+        <p class="font-bold text-slate-400">Lon's Movie Hub &copy; 2026</p>
+        <!-- TMDB attribution logo banner and statement -->
+        <p class="max-w-md mx-auto px-4 leading-relaxed">This product uses the TMDB API but is not endorsed or certified by TMDB. Movie recommendations are optimized with local insights for users in <span class="text-violet-400 font-semibold">Ghana</span>.</p>
+    </footer>
+
+    <!-- Interactive details modal, absolute z-index glassmorphism overlay hidden by default -->
+    <div id="detailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-8 opacity-0 pointer-events-none transition-all duration-300 overflow-y-auto">
+        
+        <!-- Modal body wrapper container with internal scrolling design -->
+        <div class="relative w-full max-w-5xl bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-lg my-auto flex flex-col max-h-[90vh]">
+            
+            <!-- Absolute top header close button for fast dismissals -->
+            <button id="closeModalBtn" class="absolute top-4 right-4 z-30 bg-slate-950/85 hover:bg-violet-600 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-md">
+                <!-- X icon -->
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Scrollable content zone inside the details modal -->
+            <div class="overflow-y-auto flex-grow">
+                <!-- Banner hero image within modal covering details background -->
+                <div class="relative h-[25vh] md:h-[40vh] bg-cover bg-center" id="modalBackdrop">
+                    <!-- Overlay linear fade gradient matching deep slate base -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
+                </div>
+
+                <!-- Main grid content dividing poster left and statistics right -->
+                <div class="px-6 md:px-10 pb-10 -mt-20 md:-mt-32 relative z-10 flex flex-col md:flex-row gap-6 md:gap-10">
+                    
+                    <!-- Left column: poster card with responsive sizes -->
+                    <div class="w-40 md:w-56 lg:w-64 flex-shrink-0 mx-auto md:mx-0">
+                        <!-- Poster element image -->
+                        <img id="modalPoster" src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=600" alt="Movie Poster" class="w-full rounded-2xl shadow-2xl border border-white/10 aspect-[2/3] object-cover" />
+                    </div>
+
+                    <!-- Right column: titles, tagline, numbers, synopsis -->
+                    <div class="flex-grow flex flex-col gap-4 text-center md:text-left mt-16 md:mt-24">
+                        <!-- Title display container inside modal -->
+                        <div>
+                            <!-- Movie Title tag -->
+                            <h2 id="modalTitle" class="text-2xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight">Movie Details</h2>
+                            <!-- Subtitle tagline or original translation text -->
+                            <p id="modalTagline" class="text-violet-400 italic text-sm md:text-base mt-1.5 font-medium"></p>
+                        </div>
+
+                        <!-- Technical stats bar: duration runtime, release, TMDB rating -->
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs md:text-sm font-semibold text-slate-300 bg-white/5 border border-white/5 p-3 rounded-xl w-max mx-auto md:mx-0">
+                            <!-- Star Rating -->
+                            <span class="flex items-center gap-1 text-yellow-400">
+                                <!-- Star Icon -->
+                                <i class="fa-solid fa-star"></i>
+                                <!-- Score -->
+                                <span id="modalRating">0.0</span>
+                            </span>
+                            <!-- Vertical separator line -->
+                            <span class="text-slate-700">|</span>
+                            <!-- Duration Runtime badge -->
+                            <span class="flex items-center gap-1">
+                                <!-- Clock icon -->
+                                <i class="fa-regular fa-clock"></i>
+                                <!-- Runtime string -->
+                                <span id="modalRuntime">0 min</span>
+                            </span>
+                            <!-- Vertical separator line -->
+                            <span class="text-slate-700">|</span>
+                            <!-- Year of Release -->
+                            <span class="flex items-center gap-1">
+                                <!-- Calendar icon -->
+                                <i class="fa-regular fa-calendar"></i>
+                                <!-- Release date text -->
+                                <span id="modalRelease">1970</span>
+                            </span>
+                        </div>
+
+                        <!-- Genres container tags block -->
+                        <div id="modalGenres" class="flex flex-wrap justify-center md:justify-start gap-2">
+                            <!-- Injected pills by JS -->
+                        </div>
+
+                        <!-- Long form Plot Summary heading and paragraph -->
+                        <div class="mt-2">
+                            <!-- Plot sub-header -->
+                            <h4 class="text-sm uppercase tracking-wider font-bold text-slate-400 mb-2">Synopsis</h4>
+                            <!-- Plot body narrative text -->
+                            <p id="modalOverview" class="text-sm md:text-base text-slate-300 leading-relaxed max-w-3xl">This is a synopsis details text outlining the entire film flow. It provides a quick summary view for the user reading modal cards.</p>
+                        </div>
+
+                        <!-- Favorites and Save toggle watchlist buttons -->
+                        <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
+                            <!-- Dynamic watchlist add/remove button inside details modal -->
+                            <button id="modalWatchlistBtn" class="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all duration-300">
+                                <!-- Heart toggle icon -->
+                                <i class="fa-solid fa-plus" id="modalWatchlistIcon"></i>
+                                <!-- Watchlist action label -->
+                                <span id="modalWatchlistText">Add to Watchlist</span>
+                            </button>
+                        </div>
+
+                        <!-- Key Cast credits block section display -->
+                        <div class="mt-6">
+                            <!-- Cast Header -->
+                            <h4 class="text-sm uppercase tracking-wider font-bold text-slate-400 mb-3 border-b border-white/5 pb-1">Key Cast Members</h4>
+                            <!-- Horizontal flexbox list or grid of cast actors -->
+                            <div id="modalCast" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <!-- JavaScript will inject actors here -->
+                            </div>
+                        </div>
+
+                        <!-- Similar/Recommended movies section inside the modal -->
+                        <div class="mt-8">
+                            <!-- Similar Header -->
+                            <h4 class="text-sm uppercase tracking-wider font-bold text-slate-400 mb-4 border-b border-white/5 pb-1">Recommended Movies</h4>
+                            <!-- Grid container for recommendations -->
+                            <div id="modalSimilar" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <!-- JavaScript will inject similar movies here -->
+                            </div>
+                        </div>
+                        
+                    <!-- End right column -->
+                    </div>
+                <!-- End relative details container -->
+                </div>
+            <!-- End overflow-y div -->
+            </div>
+        <!-- End modal body wrapper -->
+        </div>
+    <!-- End modal main background -->
+    </div>
+
+    <!-- Script loading the main javascript controller module -->
+    <script src="main.js"></script>
+<!-- Closing body tag -->
 </body>
-
+<!-- Closing html tag -->
 </html>
